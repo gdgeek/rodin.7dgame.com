@@ -1,18 +1,21 @@
-import getenv from "getenv";
+import "dotenv/config";
+import { envSchema } from "./config/env.schema.js";
 import type { Config } from "./types.js";
 
+const env = envSchema.parse(process.env);
+
 const config: Config = {
-  apiUrl: getenv.string("API_URL"),
+  apiUrl: env.API_URL,
   rodin: {
-    apiKey: getenv.string("RODIN_API_KEY"),
+    apiKey: env.RODIN_API_KEY,
   },
   cos: {
     secret: {
-      id: getenv.string("COS_SECRET_ID"),
-      key: getenv.string("COS_SECRET_KEY"),
+      id: env.COS_SECRET_ID,
+      key: env.COS_SECRET_KEY,
     },
-    bucket: getenv.string("COS_BUCKET"),
-    region: getenv.string("COS_REGION"),
+    bucket: env.COS_BUCKET,
+    region: env.COS_REGION,
   },
 };
 
