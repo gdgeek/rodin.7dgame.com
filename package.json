@@ -12,6 +12,7 @@
   ],
   "author": "",
   "license": "ISC",
+  "packageManager": "pnpm@9.15.1",
   "engines": {
     "node": ">=18.0.0"
   },
