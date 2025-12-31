@@ -88,5 +88,5 @@ export interface COSUploadResult {
 // Express 扩展类型
 export type AsyncRequestHandler = (
   req: Request,
-  res: Response
+  res: Response,
 ) => Promise<void>;

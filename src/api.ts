@@ -19,7 +19,7 @@ const getAuthHeaders = () => ({
  * 下载已完成的 Rodin 任务结果
  */
 export const download = async (
-  uuid: string
+  uuid: string,
 ): Promise<AxiosResponse<RodinDownloadResponse>> => {
   const response = await axios.post<RodinDownloadResponse>(
     `${RODIN_API_BASE}/download`,
@@ -29,7 +29,7 @@ export const download = async (
         "Content-Type": "application/json",
         ...getAuthHeaders(),
       },
-    }
+    },
   );
   return response;
 };
@@ -38,7 +38,7 @@ export const download = async (
  * 检查 Rodin 任务状态
  */
 export const check = async (
-  key: string
+  key: string,
 ): Promise<AxiosResponse<RodinCheckResponse>> => {
   const response = await axios.post<RodinCheckResponse>(
     `${RODIN_API_BASE}/status`,
@@ -48,7 +48,7 @@ export const check = async (
         "Content-Type": "application/json",
         ...getAuthHeaders(),
       },
-    }
+    },
   );
   return response;
 };
@@ -59,7 +59,7 @@ export const check = async (
 export const rodin = async (
   images: ImageData[],
   prompt?: string,
-  quality?: string
+  quality?: string,
 ): Promise<AxiosResponse<RodinGenerationResponse>> => {
   if ((!images || images.length === 0) && !prompt) {
     throw new Error("Images or prompt is required");
@@ -89,7 +89,7 @@ export const rodin = async (
         ...formData.getHeaders(),
         ...getAuthHeaders(),
       },
-    }
+    },
   );
 
   return response;

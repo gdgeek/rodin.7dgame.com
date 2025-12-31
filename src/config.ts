@@ -1,4 +1,4 @@
-import * as getenv from "getenv";
+import getenv from "getenv";
 import type { Config } from "./types.js";
 
 const config: Config = {

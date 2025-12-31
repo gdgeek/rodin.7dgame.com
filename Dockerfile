@@ -1,30 +1,42 @@
-# 使用 Node.js 官方镜像  
-FROM node:22-alpine  
+# Stage 1: Build
+FROM node:22-alpine AS builder
 
-# 安装 pnpm
+WORKDIR /usr/src/app
+
+# Enable pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# 设置工作目录  
-WORKDIR /usr/src/app  
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
 
-# 复制包管理文件
-COPY package.json pnpm-lock.yaml ./  
-
-# 安装依赖（包括 devDependencies 用于构建）
+# Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# 复制 TypeScript 源码和配置
+# Copy source
 COPY tsconfig.json ./
 COPY src ./src
 
-# 构建 TypeScript
+# Build
 RUN pnpm run build
 
-# 删除 devDependencies，只保留生产依赖
+# Prune dev dependencies
 RUN pnpm prune --prod
 
-# 暴露应用运行的端口  
-EXPOSE 3000  
+# Stage 2: Production
+FROM node:22-alpine
 
-# 启动应用  
-CMD ["node", "dist/index.js"]  
+WORKDIR /usr/src/app
+
+# Enable pnpm (optional if just running node, but good for consistency)
+# RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Copy node_modules from builder
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/package.json ./package.json
+
+# Expose port
+EXPOSE 3000
+
+# Start command
+CMD ["node", "dist/index.js"]
