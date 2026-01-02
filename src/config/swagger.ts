@@ -8,14 +8,10 @@ const options: swaggerJsdoc.Options = {
       version: "1.0.0",
       description: "API documentation for Rodin AI Proxy Service",
     },
-    servers: [
-      {
-        url: "http://localhost:3000",
-        description: "Local server",
-      },
-    ],
+    // Empty servers array - Swagger will use relative URLs automatically
+    servers: [],
   },
-  apis: ["./src/controllers/*.ts", "./src/types.ts"],
+  apis: ["./src/controllers/*.ts", "./dist/controllers/*.js", "./src/types.ts"],
 };
 
 export const swaggerSpec = swaggerJsdoc(options);
