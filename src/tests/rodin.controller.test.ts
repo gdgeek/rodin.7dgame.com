@@ -1,10 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { type Request, type Response } from "express";
 import axios from "axios";
-import { handleCheck, handleFile } from "./rodin.controller";
-import { cache } from "../lib/cache";
-import api from "../api";
-import { uploadToCOS } from "../lib/cos";
+import { handleCheck, handleFile } from "../controllers/rodin.controller.js";
+import { cache } from "../lib/cache.js";
+import api from "../api.js";
+import { uploadToCOS } from "../lib/cos.js";
+
+// Create typed mock references using vi.mocked
+const mockedAxios = vi.mocked(axios, true);
+const mockedApi = vi.mocked(api, true);
+const mockedUploadToCOS = vi.mocked(uploadToCOS);
 
 // Do not mock cache fully, just use real node-cache instance but flush it.
 // Mock other dependencies
@@ -67,16 +72,22 @@ describe("Rodin Controller", () => {
       const req = mockRequest({ id: "123" });
       const res = mockResponse();
 
-      (axios.get as any).mockResolvedValue({
+      mockedAxios.get.mockResolvedValue({
         status: 200,
         data: {
           generation: { jobs: { subscription_key: "sub_123" } },
         },
       });
 
-      (api.check as any).mockResolvedValue({ data: { progress: 100 } });
+      mockedApi.check.mockResolvedValue({
+        data: { status: "completed", progress: 100 },
+        status: 200,
+        statusText: "OK",
+        headers: {},
+        config: {} as never,
+      });
 
-      (axios.put as any).mockResolvedValue({
+      mockedAxios.put.mockResolvedValue({
         status: 200,
         data: { id: "123", progress: 100 },
       });
@@ -106,7 +117,7 @@ describe("Rodin Controller", () => {
       const res = mockResponse();
 
       // 1. Get Record
-      (axios.get as any).mockImplementation((url: string) => {
+      mockedAxios.get.mockImplementation((url: string) => {
         if (url.includes("resources")) {
           return Promise.resolve({
             data: {
@@ -136,12 +147,13 @@ describe("Rodin Controller", () => {
       });
 
       // 2. Upload to COS
-      (uploadToCOS as any).mockResolvedValue({
+      mockedUploadToCOS.mockResolvedValue({
         Location: "cos.example.com/key",
+        ETag: "mock-etag-123",
       });
 
       // 3. Update Record
-      (axios.put as any).mockResolvedValue({
+      mockedAxios.put.mockResolvedValue({
         status: 200,
         data: { success: true },
       });
