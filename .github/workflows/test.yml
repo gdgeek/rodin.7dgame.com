@@ -1,20 +1,19 @@
-name: CI
+name: Test
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-
-# CI 工作流仅用于 PR 的快速检查
-# 完整的流程由以下独立工作流处理:
-# - test.yml: 运行测试
-# - build.yml: 构建 Docker 镜像
-# - deploy.yml: 部署到 Portainer
+  workflow_dispatch:
 
 jobs:
-  check:
+  test:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.x, 24.x]
 
     steps:
       - uses: actions/checkout@v4
@@ -23,10 +22,10 @@ jobs:
         with:
           version: 9
 
-      - name: Use Node.js 24.x
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: 24.x
+          node-version: ${{ matrix.node-version }}
           cache: "pnpm"
 
       - name: Install dependencies
@@ -35,8 +34,11 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Check Formatting
+        run: pnpm prettier --check "src/**/*.{ts,json}"
+
       - name: Type Check
         run: pnpm typecheck
 
-      - name: Build
-        run: pnpm build
+      - name: Test
+        run: pnpm test run
