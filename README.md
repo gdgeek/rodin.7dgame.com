@@ -294,7 +294,7 @@ docker run -p 3000:3000 --env-file .env rodin-proxy
 ### Docker 镜像特点
 
 - 多阶段构建，生产镜像精简
-- 基于 `node:22-alpine`
+- 基于 `node:24-alpine`
 - 只包含生产依赖
 - 内置健康检查
 
