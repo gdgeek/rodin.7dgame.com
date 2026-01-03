@@ -14,6 +14,7 @@ import {
   handleFile,
   handleRodin,
 } from "./controllers/rodin.controller.js";
+import userRouter from "./controllers/user.controller.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
 
 const app = express();
@@ -50,6 +51,9 @@ app.get("/file", validate(IdSchema), handleFile);
 app.get("/download", validate(IdSchema), handleDownload);
 app.get("/check", validate(IdSchema), handleCheck);
 app.get("/rodin", validate(RodinSchema), handleRodin);
+
+// User Routes (RESTful CRUD)
+app.use("/api/users", userRouter);
 
 // Swagger Documentation
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
