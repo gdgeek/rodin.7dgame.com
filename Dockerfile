@@ -14,7 +14,6 @@ RUN pnpm install --frozen-lockfile
 
 # Copy source
 COPY tsconfig.json ./
-COPY prisma ./prisma
 COPY src ./src
 
 # Build
